@@ -19,6 +19,8 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
+	appsv1 "k8s.io/api/apps/v1"
+
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -37,14 +39,15 @@ type EtcdReconciler struct {
 func (r *EtcdReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	_ = r.Log.WithValues("etcd", req.NamespacedName)
-
 	// your logic here
-
+	etcd := &druidv1.Etcd{}
+	r.Get(context.TODO(), req.NamespacedName, etcd)
 	return ctrl.Result{}, nil
 }
 
 func (r *EtcdReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&druidv1.Etcd{}).
+		Owns(&appsv1.StatefulSet{}).
 		Complete(r)
 }
