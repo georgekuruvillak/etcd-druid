@@ -19,9 +19,12 @@ import (
 	"flag"
 	"os"
 
+	"github.com/sirupsen/logrus"
+
 	druidv1 "github.com/gardener/etcd-druid/api/v1"
 	"github.com/gardener/etcd-druid/controllers"
 	"k8s.io/apimachinery/pkg/runtime"
+	schemev1 "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -34,8 +37,9 @@ var (
 )
 
 func init() {
-
+	schemev1.AddToScheme(scheme)
 	druidv1.AddToScheme(scheme)
+
 	// +kubebuilder:scaffold:scheme
 }
 
@@ -59,14 +63,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = (&controllers.EtcdReconciler{
+	ec, err := (&controllers.EtcdReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("Etcd"),
-	}).SetupWithManager(mgr)
+		Logger: logrus.New(),
+		Config: mgr.GetConfig(),
+	}).InitializeControllerWithChartApplier()
+	if err != nil {
+		setupLog.Error(err, "unable to initialize controller with chart renderer")
+		os.Exit(1)
+	}
+	err = ec.SetupWithManager(mgr)
 	if err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Etcd")
 		os.Exit(1)
 	}
+
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")

@@ -7,8 +7,8 @@ resources:
 
 patches:
 # [WEBHOOK] patches here are for enabling the conversion webhook for each CRD
-#- patches/webhook_in_etcds.yaml
-# +kubebuilder:scaffold:crdkustomizewebhookpatch
+- patches/webhook_in_etcds.yaml
++kubebuilder:scaffold:crdkustomizewebhookpatch
 
 # [CAINJECTION] patches here are for enabling the CA injection for each CRD
 #- patches/cainjection_in_etcds.yaml

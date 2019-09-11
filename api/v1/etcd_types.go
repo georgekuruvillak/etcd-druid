@@ -30,75 +30,131 @@ const (
 	PolicyRetainMaster PVCRetentionPolicy = "RetainMaster"
 	// PolicyRetainAll is a constant for a policy type indicating that all the PVCs of etcd has to be retained.
 	PolicyRetainAll PVCRetentionPolicy = "RetRetainAllainMaster"
+	// GarbageCollectionPolicyExponential defines the exponential policy for garbage collecting old backups
+	GarbageCollectionPolicyExponential = "Exponential"
+	// GarbageCollectionPolicyLimitBased defines the limit based policy for garbage collecting old backups
+	GarbageCollectionPolicyLimitBased = "LimitBased"
 )
 
-// EtcdConfig will hold information about the name and namespace of the etcd object.
-type EtcdConfig struct {
-	Name      string `json:"name,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-}
+// MetricLevel defines the level 'basic' or 'extensive'.
+type MetricLevel string
 
-// TLSConfig will hold information tls config for etcd server.
-type TLSConfig struct {
-	CACert                string `json:"cacert,omitempty"`
-	Cert                  string `json:"cert,omitempty"`
-	Key                   string `json:"key,omitempty"`
-	InsecureSkipTLSVerify bool   `json:"insecureSkipTLSVerify,omitempty"`
-	InsecureTransport     bool   `json:"insecureTransport,omitempty"`
-}
+// GarbageCollectionPolicy defines the type of policy for snapshot garbage collection.
+type GarbageCollectionPolicy string
+
+const (
+	// Basic is a constant for metric level basic.
+	Basic MetricLevel = "basic"
+	// Extensive is a constant for metric level extensive.
+	Extensive MetricLevel = "extensive"
+)
 
 // Spec defines the desired state of Etcd
 type Spec struct {
-	Etcd               EtcdSpec           `json:"etcd,omitempty"`
-	Backup             BackupSpec         `json:"backup,omitempty"`
-	Store              StoreSpec          `json:"store,omitempty"`
+	// +required
+	Etcd EtcdSpec `json:"etcd"`
+	// +required
+	Backup BackupSpec `json:"backup"`
+	// +required
+	Store StoreSpec `json:"store"`
+	// +optional
 	PVCRetentionPolicy PVCRetentionPolicy `json:"pvcRetentionPolicy,omitempty"`
-	Replicas           int                `json:"replicas,omitempty"`
+	// +required
+	Replicas int `json:"replicas"`
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+	// +optional
+	Annotations map[string]string `json:"annotations,omitempty"`
+	// +required
+	StorageClass string `json:"storageClass"`
+	// +optional
+	TLSServerSecretName string `json:"tlsServerSecret,omitempty"`
+	// +optional
+	TLSClientSecretName string `json:"tlsClientSecret,omitempty"`
+	// +optional
+	StorageCapacity string `json:"storageCapacity,omitempty"`
 }
 
 // StoreSpec defines parameters related to ObjectStore persisting backups
 type StoreSpec struct {
-	Region           string                 `json:"region,omitempty"`
-	StorageContainer string                 `json:"storageContainer,omitempty"`
-	StorePrefix      string                 `json:"storePrefix,omitempty"`
-	StorageProvider  string                 `json:"storageProvider,omitempty"`
-	SecretRef        corev1.SecretReference `json:"secretRef,omitempty"`
+	// +required
+	StorageContainer string `json:"storageContainer"`
+	// +optional
+	StorePrefix string `json:"storePrefix,omitempty"`
+	// +required
+	StorageProvider string `json:"storageProvider"`
+	// +required
+	StoreSecret string `json:"storeSecret"`
 }
 
 // BackupSpec defines parametes associated with the full and delta snapshots of etcd
 type BackupSpec struct {
-	Labels                         map[string]string           `json:"labels,omitempty"`
-	Annotations                    map[string]string           `json:"annotations,omitempty"`
-	DeltaSnapshotMemoryLimit       int                         `json:"deltaSnapshotMemoryLimit,omitempty"`
-	DeltaSnapshotPeriodSeconds     int                         `json:"deltaSnapshotPeriodSeconds,omitempty"`
-	GarbageCollectionPeriodSeconds int                         `json:"garbageCollectionPeriodSeconds,omitempty"`
-	Resources                      corev1.ResourceRequirements `json:"resources,omitempty"`
-	FullSnapshotSchedule           string                      `json:"fullSnapshotSchedule,omitempty"`
-	TempSnapDir                    string                      `json:"tempSnapDir,omitempty"`
+	// +optional
+	Port int `json:"port,omitempty"`
+	// +required
+	ImageRepository string `json:"imageRepository"`
+	// +required
+	ImageVersion string `json:"imageVersion"`
+	// +optional
+	FullSnapshotSchedule string `json:"fullSnapshotSchedule,omitempty"`
+	// +optional
+	Resources corev1.ResourceRequirements `json:"resources,omitempty"`
+	// +optional
+	PullPolicy corev1.PullPolicy `json:"pullPolicy,omitempty"`
+	// +optional
+	GarbageCollectionPolicy GarbageCollectionPolicy `json:"garbageCollectionPolicy,omitempty"`
+	// +optional
+	GarbageCollectionPeriod string `json:"garbageCollectionPeriod,omitempty"`
+	// +optional
+	EtcdQuotaBytes int `json:"etcdQuotaBytes,omitempty"`
+	// +optional
+	EtcdConnectionTimeout string `json:"etcdConnectionTimeout,omitempty"`
+	// +optional
+	SnapstoreTempDir string `json:"snapstoreTempDir,omitempty"`
+	// +optional
+	DeltaSnapshotPeriod string `json:"deltaSnapshotPeriod,omitempty"`
+	// +optional
+	DeltaSnapshotMemoryLimit int `json:"deltaSnapshotMemoryLimit,omitempty"`
 }
 
 // EtcdSpec defines parametes associated etcd deployed
 type EtcdSpec struct {
-	Labels                  map[string]string           `json:"labels,omitempty"`
-	Annotations             map[string]string           `json:"annotations,omitempty"`
-	Version                 string                      `json:"version,omitempty"`
-	DataDir                 string                      `json:"dataDir,omitempty"`
-	StorageCapacity         string                      `json:"storageCapacity,omitempty"`
-	StorageClass            string                      `json:"storageClass,omitempty"`
-	Config                  EtcdConfig                  `json:"etcdConfig,omitempty"`
-	EtcdConnectionTimeout   int                         `json:"etcdConnectionTimeout,omitempty"`
-	Resources               corev1.ResourceRequirements `json:"resources,omitempty"`
-	DefragmentationSchedule string                      `json:"defragmentationSchedule,omitempty"`
-	ServiceName             string                      `json:"serviceName,omitempty"`
-	TLS                     TLSConfig                   `json:"tls,omitempty"`
+	// +optional
+	DefragmentationSchedule string `json:"defragmentationSchedule,omitempty"`
+	// +optional
+	ServerPort int `json:"serverPort,omitempty"`
+	// +optional
+	ClientPort int `json:"clientPort,omitempty"`
+	// +required
+	ImageRepository string `json:"imageRepository"`
+	// +required
+	ImageVersion string `json:"imageVersion"`
+	// +optional
+	MetricLevel MetricLevel `json:"metrics,omitempty"`
+	// +optional
+	Resources corev1.ResourceRequirements `json:"resources,omitempty"`
+	// +required
+	EnableTLS bool `json:"enableTLS"`
+	// +optional
+	PullPolicy corev1.PullPolicy `json:"pullPolicy,omitempty"`
+	// +optional
+	Username string `json:"username,omitempty"`
+	// +optional
+	Password string `json:"password,omitempty"`
+	// +required
+	InitialClusterToken string `json:"initialClusterToken"`
+	// +required
+	InitialClusterState string `json:"initialClusterState"`
 }
 
 // CrossVersionObjectReference contains enough information to let you identify the referred resource.
 type CrossVersionObjectReference struct {
 	// Kind of the referent
-	Kind string `json:"kind"`
+	// +required
+	Kind string `json:"kind,omitempty"`
 	// Name of the referent
-	Name string `json:"name"`
+	// +required
+	Name string `json:"name,omitempty"`
 	// API version of the referent
 	// +optional
 	APIVersion string `json:"apiVersion,omitempty"`
@@ -131,28 +187,21 @@ const (
 // Condition holds the information about the state of a resource.
 type Condition struct {
 	// Type of the Shoot condition.
-	Type ConditionType
+	Type ConditionType `json:"type,omitempty"`
 	// Status of the condition, one of True, False, Unknown.
-	Status ConditionStatus
+	Status ConditionStatus `json:"status,omitempty"`
 	// Last time the condition transitioned from one status to another.
-	LastTransitionTime metav1.Time
+	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty"`
 	// Last time the condition was updated.
-	LastUpdateTime metav1.Time
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
 	// The reason for the condition's last transition.
-	Reason string
+	Reason string `json:"reason,omitempty"`
 	// A human readable message indicating details about the transition.
-	Message string
+	Message string `json:"message,omitempty"`
 }
 
 // EndpointStatus is the status of a condition.
 type EndpointStatus string
-
-// Endpoint holds information about etcd endpoints
-type Endpoint struct {
-	Name   string         `json:"name"`
-	Status EndpointStatus `json:"status"`
-	Port   int            `json:"port"`
-}
 
 // LastOperationType is a string alias.
 type LastOperationType string
@@ -188,37 +237,33 @@ const (
 // message and a progress indicator.
 type LastOperation struct {
 	// A human readable message indicating details about the last operation.
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 	// Last time the operation state transitioned from one to another.
-	LastUpdateTime metav1.Time `json:"lastUpdateTime"`
+	LastUpdateTime metav1.Time `json:"lastUpdateTime,omitempty"`
 	// The progress in percentage (0-100) of the last operation.
-	Progress int `json:"progress"`
+	Progress int `json:"progress,omitempty"`
 	// Status of the last operation, one of Aborted, Processing, Succeeded, Error, Failed.
-	State LastOperationState `json:"state"`
+	State LastOperationState `json:"state,omitempty"`
 	// Type of the last operation, one of Create, Reconcile, Delete.
-	Type LastOperationType `json:"type"`
+	Type LastOperationType `json:"type,omitempty"`
 }
 
 // Status defines the observed state of Etcd
 type Status struct {
-	Etcd               CrossVersionObjectReference `json:"etcd"`
-	Backup             CrossVersionObjectReference `json:"backup"`
-	Conditions         []Condition                 `json:"conditions"`
-	CurrentReplicas    int                         `json:"currentReplicas"`
-	CurrentRevision    int                         `json:"currentRevision"`
-	Endpoints          []Endpoint                  `json:"endpoints"`
-	LastError          string                      `json:"lastError"`
-	LastOperation      LastOperation               `json:"lastOperation,omitempty"`
-	ObservedGeneration int                         `json:"observedGeneration"`
-	Replicas           int                         `json:"replicas"`
-	ReadyReplicas      int                         `json:"readyReplicas"`
-	Ready              bool                        `json:"ready"`
-	UpdatedReplicas    int                         `json:"updatedReplicas"`
-	UpdatedRevision    int                         `json:"updatedRevision"`
+	Etcd            CrossVersionObjectReference `json:"etcd,omitempty"`
+	Conditions      []Condition                 `json:"conditions,omitempty"`
+	CurrentReplicas int32                       `json:"currentReplicas,omitempty"`
+	Endpoints       []corev1.Endpoints          `json:"endpoints,omitempty"`
+	LastError       string                      `json:"lastError,omitempty"`
+	Replicas        int32                       `json:"replicas,omitempty"`
+	ReadyReplicas   int32                       `json:"readyReplicas,omitempty"`
+	Ready           bool                        `json:"ready,omitempty"`
+	UpdatedReplicas int32                       `json:"updatedReplicas,omitempty"`
+	//LastOperation   LastOperation               `json:"lastOperation,omitempty"`
 }
 
 // +kubebuilder:object:root=true
-
+// +kubebuilder:subresource:status
 // Etcd is the Schema for the etcds API
 type Etcd struct {
 	metav1.TypeMeta   `json:",inline"`
