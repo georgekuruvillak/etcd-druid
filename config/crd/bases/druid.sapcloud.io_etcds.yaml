@@ -5,7 +5,6 @@ kind: CustomResourceDefinition
 metadata:
   name: etcds.druid.sapcloud.io
 spec:
-  preserveUnknownFields: false
   group: druid.sapcloud.io
   names:
     kind: Etcd
@@ -396,38 +395,38 @@ spec:
                 deltaSnapshotMemoryLimit:
                   type: integer
                   minimum: 0
-                  default: 10485760
+                  #default: 10485760
                 deltaSnapshotPeriod:
                   type: string
-                  default: 60s 
+                  #default: 60s 
                   pattern: '^[-+]?([0-9]*(\.[0-9]*)?[ns|us|µs|μs|ms|S|m|h]+)+$'
                 etcdConnectionTimeout:
                   type: string
-                  default: 30s
+                  #default: 30s
                 etcdQuotaBytes:
                   type: integer
-                  default: 8589934592
+                  #default: 8589934592
                 fullSnapshotSchedule:
                   type: string
                   pattern: '^(\d+|\*)(\/\d+)?(\s+(\d+|\*)(\/\d+)?){4}$'
                 garbageCollectionPeriod:
                   type: string
-                  default: 60s 
+                  #default: 60s 
                   pattern: '^[-+]?([0-9]*(\.[0-9]*)?[ns|us|µs|μs|ms|S|m|h]+)+$'
                 garbageCollectionPolicy:
                   type: string
-                  pattern: [LimitBased|Exponential]
-                  default: Exponential
+                  pattern: (LimitBased|Exponential)
+                  #default: Exponential
                 imageRepository:
                   type: string
                 imageVersion:
                   type: string
                 port:
                   type: integer
-                  default: 8080
+                  #default: 8080
                 pullPolicy:
                   type: string
-                  pattern: [Never|Always|IfNotPresent]
+                  pattern: (Never|Always|IfNotPresent)
                 resources:
                   properties:
                     limits:
@@ -466,33 +465,33 @@ spec:
               properties:
                 clientPort:
                   type: integer
-                  default: 2379
+                  #default: 2379
                 defragmentationSchedule:
                   type: string
                   pattern: '^(\d+|\*)(\/\d+)?(\s+(\d+|\*)(\/\d+)?){4}$'
                 enableTLS:
                   type: boolean
-                  default: false
+                  #default: false
                 imageRepository:
                   type: string
                 imageVersion:
                   type: string
                 initialClusterState:
                   type: string
-                  default: new
+                  #default: new
                 initialClusterToken:
                   type: string
-                  default: new
+                  #default: new
                 metrics:
                   type: string
-                  pattern: [extensive|basic]
-                  default: basic
+                  pattern: (extensive|basic)
+                  #default: basic
                 password:
                   type: string
                 pullPolicy:
                   type: string
-                  default: IfNotPresent
-                  pattern: [Never|Always|IfNotPresent]
+                  #default: IfNotPresent
+                  pattern: (Never|Always|IfNotPresent)
                 resources:
                   properties:
                     limits:
@@ -512,7 +511,7 @@ spec:
                   type: object
                 serverPort:
                   type: integer
-                  default: 2380
+                  #default: 2380
                 username:
                   type: string
               required:
@@ -534,14 +533,14 @@ spec:
               type: object
             pvcRetentionPolicy:
               type: string
-              pattern: [DeleteAll|RetainMaster|RetRetainAllainMaster|Exponential|LimitBased]
-              default: DeleteAll
+              pattern: (DeleteAll|RetainMaster|RetRetainAllainMaster|Exponential|LimitBased)
+              #default: DeleteAll
             replicas:
               type: integer
-              default: 1
+              #default: 1
             storageCapacity:
               type: string
-              default: 16Gi
+              #default: "16Gi"
             storageClass:
               type: string
             store:
