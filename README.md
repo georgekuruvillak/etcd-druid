@@ -1,23 +1,29 @@
 # ETCD Druid
-## Background
-[ETCD](https://github.com/etcd-io/etcd) in the control plane of Kubernetes clusters managed by Gardener is  deployed as a Statefulset. The statefulset has a replica of one pod having two containers namely, etcd and [backup-restore](https://github.com/gardener/etcd-backup-restore). Etcd container interfaces with the etcd-backup-restore before etcd startup via REST apis in a bash script to perform data validation. If the validation fails, the latest snapshot in the cloud-provider object-store is restored to the etcd directory. Once etcd has started, the etcd-backup-restore takes periodic full and delta snapshots. It performs periodic defragmentation of etcd data as well. 
 
-The etcd-backup-restore requires as its input the cloud-provider information comprising of security credentials to access the object store, the object-store bucket name and prefix for the directory to push/pull snapshots. Currently, for operations like migration and validation, the bash script has to be updated to initiate the operation. 
+## Background
+
+[Etcd](https://github.com/etcd-io/etcd) in the control plane of Kubernetes clusters which are managed by Gardener is deployed as a StatefulSet. The statefulset has replica of a pod containing two containers namely, etcd and [backup-restore](https://github.com/gardener/etcd-backup-restore). The etcd container calls components in etcd-backup-restore via REST api to perform data validation before etcd is started. If this validation fails etcd data is restored from the latest snapshot stored in the cloud-provider's object store. Once etcd has started, the etcd-backup-restore periodically creates full and delta snapshots. It also performs defragmentation of etcd data periodically.
+
+The etcd-backup-restore needs as input the cloud-provider information comprising of security credentials to access the object store, the object store bucket name and prefix for the directory used to store snapshots. Currently, for operations like migration and validation, the bash script has to be updated to initiate the operation.
 
 ## Goals
-* Deploy etcd and etcd-backup-restore using an Etcd CRD.
-* Support replicas for etcd greater than one.
+
+* Deploy etcd and etcd-backup-restore using an etcd CRD.
+* Support more than one etcd replica.
 * Perform scheduled snapshots.
-* Support opertions such as restores, defrags and scaling with zero-downtime.
+* Support operations such as restores, defragmentation and scaling with zero-downtime.
 * Handle cloud-provider specific operation logic.
 * Trigger a full backup on request before volume deletion.
-* Offline compaction of full and delta snapshots in objectstore.
+* Offline compaction of full and delta snapshots stored in object store.
 
 ## Proposal
-The existing method of deploying etcd and backup-sidecar as a StatefulSet alleviates the pain of ensuring the pods are live and ready after node crashes. However, deploying etcd as a Statefulset also brings a plethora of challenges. The etcd controller should be smart enough to handle etcd statefulsets taking into account limitations imposed by statefulsets. The controller shall update the status regarding how to target the K8s objects it has created. This field in the status can be leveraged by `HVPA` to scale the etcd resources eventually.
+
+The existing method of deploying etcd and backup-sidecar as a StatefulSet alleviates the pain of ensuring the pods are live and ready after node crashes. However, deploying etcd as a Statefulset introduces a plethora of challenges. The etcd controller should be smart enough to handle etcd statefulsets taking into account limitations imposed by statefulsets. The controller shall update the status regarding how to target the K8s objects it has created. This field in the status can be leveraged by `HVPA` to scale etcd resources eventually.
 
 ## CRD specification
-The Etcd CRD should contain the information required to create the etcd and backup-restore sidecar in a pod/statefulset.
+
+The etcd CRD should contain the information required to create the etcd and backup-restore sidecar in a pod/statefulset.
+
 ```yaml
 --- 
 
@@ -114,10 +120,15 @@ status:
 ```
 
 ## Implementation Agenda
-We shall target defragmentation during maintenence window as the first step. Subsequently, we shall attempt to perform zero-downtime upgrades and defragmentation.
+
+As first step implement defragmentation during maintenance windows. Subsequently, we will add zero-downtime upgrades and defragmentation.
 
 ## Workflow
+
 ### Deployment workflow
+
 ![controller-diagram](./docs/controller.png)
-### Defragment workflow
+
+### Defragmentation workflow
+
 ![defrag-diagram](./docs/defrag.png)
