@@ -1,3 +1,5 @@
+SPDX short identifier: Apache-2.0
+
 ```
                                  Apache License
                            Version 2.0, January 2004
@@ -220,19 +222,19 @@ This project includes the following subcomponents that are subject to separate l
 Your use of these subcomponents is subject to the separate license terms applicable to
 each subcomponent.
 
-Schema of the external API types that are served by the Kubernetes API server.
-https://github.com/kubernetes/api.
-Copyright 2017 The Kubernetes Authors.
+Schema of the external API types that are served by the Kubernetes API server  
+https://github.com/kubernetes/api  
+Copyright 2017 The Kubernetes Authors  
 Apache 2 license (https://github.com/kubernetes/api/blob/master/LICENSE)
 
-Scheme, typing, encoding, decoding, and conversion packages for Kubernetes and Kubernetes-like API objects.
-https://github.com/kubernetes/apimachinery.
-Copyright 2014 The Kubernetes Authors.
+Scheme, typing, encoding, decoding, and conversion packages for Kubernetes and Kubernetes-like API objects.  
+https://github.com/kubernetes/apimachinery  
+Copyright 2014 The Kubernetes Authors  
 Apache 2 license (https://github.com/kubernetes/apimachinery/blob/master/LICENSE)
 
 Logrus.  
-https://github.com/sirupsen/logrus.  
-Copyright (c) 2014 Simon Eskildsen.  
+https://github.com/sirupsen/logrus  
+Copyright (c) 2014 Simon Eskildsen  
 MIT license (https://github.com/sirupsen/logrus/blob/master/LICENSE)
 
 Client-go  
@@ -240,18 +242,48 @@ https://github.com/kubernetes/client-go
 Copyright 2017 The Kubernetes Authors  
 Apache 2 license (https://github.com/kubernetes/client-go/blob/master/LICENSE)  
 
-Etcd.  
-https://github.com/coreos/etcd.  
-Copyright 2017 The etcd Authors.  
+Etcd  
+https://github.com/coreos/etcd  
+Copyright 2017 The etcd Authors  
 Apache 2 license (https://github.com/coreos/etcd/blob/master/LICENSE)
 
-Kubebuilder
+Kubebuilder  
 Copyright 2017 The Kubernetes Authors  
 Apache 2 license (https://github.com/kubernetes-sigs/kubebuilder/blob/master/LICENSE)
 
-Helm.  
-https://git.k8s.io/helm.  
-Copyright 2017 The Kubernetes Authors.  
+Helm  
+https://git.k8s.io/helm  
+Copyright 2017 The Kubernetes Authors  
 Apache 2 license (https://git.k8s.io/helm/LICENSE)  
+
+------
+
+## MIT License
+
+SPDX short identifier: MIT
+
+```
+    The MIT License (MIT)
+
+    Copyright (c) <year> <owner>
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+```
 
 ------
